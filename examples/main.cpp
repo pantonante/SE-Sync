@@ -1,11 +1,10 @@
 #include "SESync/SESync.h"
 #include "SESync/SESync_utils.h"
 
-#include <fstream>
-
-#ifdef GPERFTOOLS
-#include <gperftools/profiler.h>
-#endif
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+#include <limits>
 
 using namespace std;
 using namespace SESync;
@@ -18,34 +17,27 @@ int main(int argc, char **argv) {
 
   size_t num_poses;
   measurements_t measurements = read_g2o_file(argv[1], num_poses);
-  cout << "Loaded " << measurements.size() << " measurements between "
-       << num_poses << " poses from file " << argv[1] << endl
-       << endl;
   if (measurements.size() == 0) {
-    cout << "Error: No measurements were read!"
-         << " Are you sure the file exists?" << endl;
+    cout << "Error" << endl;
     exit(1);
   }
 
   SESyncOpts opts;
-  opts.verbose = true; // Print output to stdout
+  opts.verbose = false; // Don't print output to stdout
   opts.num_threads = 4;
-
-#ifdef GPERFTOOLS
-  ProfilerStart("SE-Sync.prof");
-#endif
+  // opts.preconditioned_grad_norm_tol = 1e-6;
 
   /// RUN SE-SYNC!
   SESyncResult results = SESync::SESync(measurements, opts);
 
-#ifdef GPERFTOOLS
-  ProfilerStop();
-#endif
-
   // Write output
-  string filename = "poses.txt";
-  cout << "Saving final poses to file: " << filename << endl;
-  ofstream poses_file(filename);
-  poses_file << results.xhat;
-  poses_file.close();
+  std::setprecision(std::numeric_limits<long double>::digits10 + 1);
+  std::cout << "{" << std::endl;
+  /** The value of the rounded solution xhat in SE(d)^n */
+  std::cout << "\"f_hat\":" << results.Fxhat << "," << std::endl;
+  /** The value of the objective F(Y^T Y) = F(Z) attained by the Yopt */
+  std::cout << "\"f_sdp\":" << results.SDPval << "," << std::endl;
+  std::cout << "\"x_hat_shape\": [" << results.xhat.rows() << "," << results.xhat .cols() << "]," << std::endl;
+  std::cout << "\"x_hat\":\"" << results.xhat << "\"" << std::endl;
+  std::cout << "}" << std::endl;
 }
