@@ -38,6 +38,7 @@ int main(int argc, char **argv) {
   /** The value of the objective F(Y^T Y) = F(Z) attained by the Yopt */
   std::cout << "\"f_sdp\":" << results.SDPval << "," << std::endl;
   std::cout << "\"x_hat_shape\": [" << results.xhat.rows() << "," << results.xhat .cols() << "]," << std::endl;
-  std::cout << "\"x_hat\":\"" << results.xhat << "\"" << std::endl;
+  std::cout << "\"x_hat\":\"" << results.xhat << "\"," << std::endl;
+  std::cout << "\"x_relaxed\":\"" << results.xrelaxed << "\"" << std::endl;
   std::cout << "}" << std::endl;
 }

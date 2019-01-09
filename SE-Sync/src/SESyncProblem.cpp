@@ -255,6 +255,65 @@ Matrix SESyncProblem::retract(const Matrix &Y, const Matrix &dotY) const {
   }
 }
 
+Matrix SESyncProblem::relaxed_solution(const Matrix Y) const {
+
+  // First, compute a thin SVD of Y
+  Eigen::JacobiSVD<Matrix> svd(Y, Eigen::ComputeThinV);
+
+  Vector sigmas = svd.singularValues();
+  // Construct a diagonal matrix comprised of the first d singular values
+  DiagonalMatrix Sigma_d(d_);
+  DiagonalMatrix::DiagonalVectorType &diagonal = Sigma_d.diagonal();
+  for (size_t i = 0; i < d_; ++i)
+    diagonal(i) = sigmas(i);
+
+  // First, construct a rank-d truncated singular value decomposition for Y
+  Matrix R = Sigma_d * svd.matrixV().leftCols(d_).transpose();
+
+  Vector determinants(n_);
+
+  // Compute the offset at which the rotation matrix blocks begin
+  size_t rot_offset = (form_ == Formulation::Simplified ? 0 : n_);
+
+  size_t ng0 = 0; // This will count the number of blocks whose
+  // determinants have positive sign
+  for (size_t i = 0; i < n_; ++i) {
+    // Compute the determinant of the ith dxd block of R
+    determinants(i) = R.block(0, rot_offset + i * d_, d_, d_).determinant();
+    if (determinants(i) > 0)
+      ++ng0;
+  }
+
+  if (ng0 < n_ / 2) {
+    // Less than half of the total number of blocks have the correct sign, so
+    // reverse their orientations
+
+    // Get a reflection matrix that we can use to reverse the signs of those
+    // blocks of R that have the wrong determinant
+    Matrix reflector = Matrix::Identity(d_, d_);
+    reflector(d_ - 1, d_ - 1) = -1;
+
+    R = reflector * R;
+  }
+
+  // Finally, project each dxd rotation block to SO(d)
+  if (form_ == Formulation::Explicit)
+    return R;
+  else // form == Explicit
+  {
+    // In this case, we also need to recover the corresponding translations
+    Matrix X(d_, (d_ + 1) * n_);
+
+    // Set rotational states
+    X.block(0, n_, d_, d_ * n_) = R;
+
+    // Recover translational states
+    X.block(0, 0, d_, n_) = recover_translations(B1_, B2_, R);
+
+    return X;
+  }
+}
+
 Matrix SESyncProblem::round_solution(const Matrix Y) const {
 
   // First, compute a thin SVD of Y

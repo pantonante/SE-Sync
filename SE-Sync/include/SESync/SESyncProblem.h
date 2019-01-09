@@ -296,6 +296,12 @@ public:
   /** Given a point Y in the domain D of the rank-r relaxation of the SE-Sync
    * optimization problem, this function computes and returns a matrix X = [t |
    * R] comprised of translations and rotations for a set of feasible poses for
+   * the original estimation problem WITHOUT ROUNDING the point Y */
+  Matrix relaxed_solution(const Matrix Y) const;
+
+  /** Given a point Y in the domain D of the rank-r relaxation of the SE-Sync
+   * optimization problem, this function computes and returns a matrix X = [t |
+   * R] comprised of translations and rotations for a set of feasible poses for
    * the original estimation problem obtained by rounding the point Y */
   Matrix round_solution(const Matrix Y) const;
 

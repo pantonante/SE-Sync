@@ -20,7 +20,7 @@ SESyncResult SESync(SESyncProblem &problem, const SESyncOpts &options,
   // A cache variable to store the *Euclidean* gradient at the current iterate Y
   Matrix NablaF_Y;
 
-  // The output results struct that we will return
+  // The output results struct that we will return©
   SESyncResult SESyncResults;
   SESyncResults.status = RS_ITER_LIMIT;
 
@@ -416,6 +416,8 @@ SESyncResult SESync(SESyncProblem &problem, const SESyncOpts &options,
 
   if (options.verbose)
     std::cout << std::endl << "Rounding solution ... ";
+
+  SESyncResults.xrelaxed = problem.relaxed_solution(SESyncResults.Yopt);
 
   // Round solution
   auto rounding_start_time = Stopwatch::tick();

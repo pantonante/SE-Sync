@@ -190,6 +190,9 @@ struct SESyncResult {
   /** The value of the rounded solution xhat in SE(d)^n */
   double Fxhat;
 
+  /** The rounded solution xrelaxed = [t | R], (R might not be a rotation matrix`) */
+  Matrix xrelaxed;
+
   /** The rounded solution xhat = [t | R] in SE(d)^n */
   Matrix xhat;
 
