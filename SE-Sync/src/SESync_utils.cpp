@@ -25,7 +25,7 @@ measurements_t read_g2o_file(const std::string &filename, size_t &num_poses) {
   std::string token;
 
   // Preallocate various useful quantities
-  double dx, dy, dz, dtheta, dqx, dqy, dqz, dqw, I11, I12, I13, I14, I15, I16,
+  double dx, dy, dz, dtheta, dqx, dqy, dqz, dqw, weight, I11, I12, I13, I14, I15, I16,
       I22, I23, I24, I25, I26, I33, I34, I35, I36, I44, I45, I46, I55, I56, I66;
 
   size_t i, j;
@@ -54,7 +54,7 @@ measurements_t read_g2o_file(const std::string &filename, size_t &num_poses) {
 
       // Extract formatted output
       strstrm >> i >> j >> dx >> dy >> dtheta >> I11 >> I12 >> I13 >> I22 >>
-          I23 >> I33;
+          I23 >> I33 >> weight;
 
       // Fill in elements of this measurement
 
@@ -68,9 +68,9 @@ measurements_t read_g2o_file(const std::string &filename, size_t &num_poses) {
 
       Eigen::Matrix2d TranCov;
       TranCov << I11, I12, I12, I22;
-      measurement.tau = 2 / TranCov.inverse().trace();
+      measurement.tau = weight * 2 / TranCov.inverse().trace();
 
-      measurement.kappa = I33;
+      measurement.kappa = weight * I33;
 
     } else if (token == "EDGE_SE3:QUAT") {
       // This is a 3D pose measurement
@@ -91,7 +91,8 @@ measurements_t read_g2o_file(const std::string &filename, size_t &num_poses) {
       // Extract formatted output
       strstrm >> i >> j >> dx >> dy >> dz >> dqx >> dqy >> dqz >> dqw >> I11 >>
           I12 >> I13 >> I14 >> I15 >> I16 >> I22 >> I23 >> I24 >> I25 >> I26 >>
-          I33 >> I34 >> I35 >> I36 >> I44 >> I45 >> I46 >> I55 >> I56 >> I66;
+          I33 >> I34 >> I35 >> I36 >> I44 >> I45 >> I46 >> I55 >> I56 >> I66 >>
+          weight;
 
       // Fill in elements of the measurement
 
@@ -109,14 +110,14 @@ measurements_t read_g2o_file(const std::string &filename, size_t &num_poses) {
       // of the parameter tau
       Eigen::Matrix3d TranCov;
       TranCov << I11, I12, I13, I12, I22, I23, I13, I23, I33;
-      measurement.tau = 3 / TranCov.inverse().trace();
+      measurement.tau = weight * 3 / TranCov.inverse().trace();
 
       // Compute and store the optimal (information-divergence-minimizing value
       // of the parameter kappa
 
       Eigen::Matrix3d RotCov;
       RotCov << I44, I45, I46, I45, I55, I56, I46, I56, I66;
-      measurement.kappa = 3 / (2 * RotCov.inverse().trace());
+      measurement.kappa = weight * 3 / (2 * RotCov.inverse().trace());
 
     } else if ((token == "VERTEX_SE2") || (token == "VERTEX_SE3:QUAT")) {
       // This is just initialization information, so do nothing
