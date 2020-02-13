@@ -161,11 +161,11 @@ SESyncResult SESync(SESyncProblem &problem, const SESyncOpts &options,
       };
 
   // Preconditioning operator (optional)
-  std::experimental::optional<
+  std::optional<
       Optimization::Smooth::LinearOperator<Matrix, Matrix, Matrix>>
       precon;
   if (options.preconditioner == Preconditioner::None)
-    precon = std::experimental::nullopt;
+    precon = std::nullopt;
   else {
     Optimization::Smooth::LinearOperator<Matrix, Matrix, Matrix> precon_op =
         [&problem](const Matrix &Y, const Matrix &Ydot,

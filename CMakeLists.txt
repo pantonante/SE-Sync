@@ -4,8 +4,8 @@ cmake_minimum_required(VERSION 3.1)
 
 # PROJECT CONFIGURATION
 project(SESync LANGUAGES C CXX VERSION 1.0.0)
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON) # We require C++ 14
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON) # We require C++ 17
 
 
 # Set build type to 'RelWithDebInfo' if one was not specified by the user
@@ -137,4 +137,5 @@ add_subdirectory(examples)
 export(PACKAGE ${PROJECT_NAME})
 # Create a configuration file for this project, so that it can be imported by other CMake projects
 export(TARGETS ${PROJECT_NAME} Optimization FILE ${PROJECT_NAME}Config.cmake)
+install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 
