@@ -124,7 +124,7 @@ target_link_libraries(${PROJECT_NAME} Optimization ${BLAS_LIBRARIES} ${CHOLMOD_L
 if(OpenMP_CXX_FOUND)
 # Add additional compilation flags to enable OpenMP support
 # set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS ${OpenMP_CXX_FLAGS})
-target_link_libraries(MyTarget PUBLIC OpenMP::OpenMP_CXX)
+target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_CXX)
 endif()
 
 # BUILD EXAMPLE DRIVER
