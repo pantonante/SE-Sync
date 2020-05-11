@@ -121,10 +121,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${SESync_PRIVATE_INCLUDES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${SESync_INCLUDES})
 target_link_libraries(${PROJECT_NAME} Optimization ${BLAS_LIBRARIES} ${CHOLMOD_LIBRARIES} ${SPQR_LIBRARIES} ${M} ${LAPACK})
 
-if(OPENMP_FOUND)
+if(OpenMP_CXX_FOUND)
 # Add additional compilation flags to enable OpenMP support
-set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS ${OpenMP_CXX_FLAGS})
-target_link_libraries(${PROJECT_NAME} gomp)
+# set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS ${OpenMP_CXX_FLAGS})
+target_link_libraries(MyTarget PUBLIC OpenMP::OpenMP_CXX)
 endif()
 
 # BUILD EXAMPLE DRIVER
