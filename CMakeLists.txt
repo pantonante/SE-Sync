@@ -1,6 +1,6 @@
 # dmrosen 18-May-2017
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.9)
 
 # PROJECT CONFIGURATION
 project(SESync LANGUAGES C CXX VERSION 1.0.0)
@@ -124,7 +124,7 @@ target_link_libraries(${PROJECT_NAME} Optimization ${BLAS_LIBRARIES} ${CHOLMOD_L
 if(OpenMP_CXX_FOUND)
 # Add additional compilation flags to enable OpenMP support
 # set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS ${OpenMP_CXX_FLAGS})
-target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_CXX)
+target_link_libraries(${PROJECT_NAME} OpenMP::OpenMP_CXX)
 endif()
 
 # BUILD EXAMPLE DRIVER
